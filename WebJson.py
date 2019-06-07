@@ -11,11 +11,8 @@ classtype = list()
 # classtype.append("rdfs:Datatype")  # 蓝色，外单圈
 # classtype.append("owl:Class")  # 黄色方框
 
-classtype.append("rdfs:Class")
-classtype.append("rdfs:Class")
-classtype.append("rdfs:Class")
-classtype.append("rdfs:Class")
-classtype.append("rdfs:Class")
+for _ in range(20):
+    classtype.append("rdfs:Class")
 
 propertytype = list()
 # propertytype.append("owl:datatypeproperty")  # 绿色属性框
@@ -26,7 +23,7 @@ propertytype.append("owl:datatypeproperty")
 propertytype.append("owl:datatypeproperty")
 propertytype.append("owl:datatypeproperty")
 
-css_appendix = "append.css"
+css_appendix = "files/append.css"
 colorlist = list()
 colorlist.append("#CD3333")  # 大红色
 colorlist.append("#ADFF2F")  # 青绿色
@@ -36,6 +33,52 @@ colorlist.append("#0000FF")  # 海蓝色
 colorlist.append("#00FFFF")  # 天蓝色
 colorlist.append("#B8860B")  # 浅棕色
 colorlist.append("#DB7093")  # 暗红色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#FFB90F")  # 橘黄色
 colorlist.append("#FFB90F")  # 橘黄色
 
 
@@ -52,10 +95,29 @@ class WebJson:
             print("没有{}文件".format(css_appendix))
 
     @staticmethod
-    def store(data, file):
-        path = 'G:\webvowlJson\{}.json'.format(file)
+    def store(data, file, base_path):
+        path = 'files\{}.json'.format(file)
+        # print("json store path1", path)
         with open(path, 'w') as json_file:
             json_file.write(json.dumps(data))
+
+        path = f"{base_path}data\{file}.json"
+        # print("json store path2", path)
+        with open(path, 'w') as json_file:
+            json_file.write(json.dumps(data))
+
+    @staticmethod
+    def merge_css(base_path):
+        dst_css = base_path + "css\webvowl.css"
+        # print("dst css path", dst_css)
+        with open(dst_css, mode="w", encoding="utf-8") as dst_fp:
+            with open("files/base.css", mode="r", encoding="utf-8") as src_fp:
+                for line in src_fp.readlines():
+                    dst_fp.write(line)
+
+            with open("files/append.css", mode="r", encoding="utf-8") as src_fp:
+                for line in src_fp.readlines():
+                    dst_fp.write(line)
 
     @staticmethod
     def load():
@@ -103,7 +165,7 @@ class WebJson:
             classAttr["description"]["undefined"] = description
 
         if color != "default":
-            if 0 == color:
+            if color >= 0:
                 max_diff = 25
                 base_r = 50 + max_diff
                 r = base_r - max_diff * rank / total

@@ -1,37 +1,33 @@
 # -*- coding: utf-8 -*-
-import WebJson
-import Tencent
 
 import numpy as np
 import pandas as pd
+import copy
+import _pickle as pickle
+
+from webvowlJson.WebJson import *
 
 
-num = 100
+class Manager(object):
+    def __init__(self, limit=100, sort_key="total_sold_price", file="datum",
+                 base_path="G:\zjDetect\webvowl\\"):
+        self.webjson = WebJson()
+        self.webjson.classid = 0
+        self.webjson.propertyid = 0
 
-# ￥￥可以是统一的名字
-# css一个基础文件，一个新文件
-# 编号可能不需要了
+        self.limit = limit
+        self.sort_key = sort_key
+        self.file = file
+        self.base_path = base_path
 
-sort_key = "biz30day"
-# sort_key = "total_sold_price"
-file = "biztop{}".format(str(num))
+    def get_info(self):
+        with open("interface/ret1.pkl", mode="rb") as fp:
+            data = pickle.load(fp)
 
-with open("node.txt", mode="r", encoding="utf-8") as fp:
-    line = fp.readline()
-    classid, propertyid = line.split(" ")
-    classid = int(classid)
-    propertyid = int(propertyid)
+        with open("interface/ret2.pkl", mode="rb") as fp:
+            attrs = pickle.load(fp)
 
-print("classId", classid)
-print("propertyId", propertyid)
-
-
-class Manager:
-    def __init__(self):
-        self.webjson = WebJson.WebJson()
-        self.webjson.classid = classid
-        self.webjson.propertyid = propertyid
-        self.db = Tencent.Tencent()
+        return data, attrs
 
     def make(self, models, submarkets):
         data = self.webjson.init_json()
@@ -192,58 +188,102 @@ class Manager:
 
         return data
 
-    def select_rank(self, models):
-        # baseline = ["model_rank", True]
-        # baseline = ["biz30day", False]
-        baseline = ["total_sold_price", False]
+    def prune(self, data):
+        if len(data) <= self.limit:
+            return data, len(data)
+        else:
+            records = list()
+            for k, v in data.items():
+                records.append([k, v["total_sold_price"][0]])
+            records.sort(key=lambda x: x[1], reverse=True)
 
-        models = models.sort_values(by=sort_key, ascending=True)
-        select_models = pd.DataFrame(columns=list(models.columns)+["rank", "total"])
-        rank_df, total = self.db.get_rank()
-        print("rank df has", len(rank_df), "rows")
-        cnt = 0
-        for k, v in models.iterrows():
-            piece = rank_df[(rank_df["brand"] == v["brand"]) & (rank_df["model"] == v["model"])]
-            if 0 != len(piece):
-                v["rank"] = piece[baseline[0]].values[0]
-                select_models = select_models.append(v)
-                cnt += 1
-            if cnt == num:
-                break
+            new_data = dict()
+            for seq in range(self.limit):
+                key = records[seq][0]
+                new_data[key] = copy.deepcopy(data[key])
 
-        select_models = select_models.sort_values(by="rank", ascending=baseline[1])
-        rank = 0
-        for k, v in select_models.iterrows():
-            rank += 1
-            print(v["rank"])
-            select_models.at[k, "rank"] = rank
-        select_models["total"] = min(num, len(select_models))
-        # print(select_models)
+            del data
+            return new_data, self.limit
 
-        return select_models
+    def rank_ontology(self, data, attrs):
+        records = dict()
+        for model, info in data.items():
+            sall = float(info["total_sold_price"][0])
+            records[model] = sall
+            for attr in attrs:
+                try:
+                    for item in info[attr]:
+                        records[item] = records.setdefault(item, 0) + sall
+                except KeyError:
+                    pass
+
+        records = sorted(records.items(), key=lambda x: x[1], reverse=True)
+
+        ranks = dict()
+        for rank, record in enumerate(records, start=1):
+            ranks[record[0]] = rank
+
+        return ranks, len(ranks)
+
+    def fill_graph(self, data, attrs, ranks, total):
+        graph = self.webjson.init_json()
+
+        graph["class"] = list()
+        graph["classAttribute"] = list()
+        graph["property"] = list()
+        graph["propertyAttribute"] = list()
+
+        classid2model = dict()
+        for model, info in data.items():
+            description = ""
+            for key, values in info.items():
+                description += f"{key}: {', '.join(map(str, values))}\n"
+
+            classid, idjson, attrjson = self.webjson.make_class(1, info["model"][0], description=description, color=0,
+                                                                rank=ranks[model], total=total)
+            graph["class"].append(idjson)
+            graph["classAttribute"].append(attrjson)
+            classid2model[model] = classid
+
+        color_map = dict()
+        for color_seq, attr in enumerate(attrs, start=1):
+            color_map[attr] = color_seq
+        for seq, attr in enumerate(attrs, start=1):
+            classid2attr = dict()
+            color = color_map[attr]
+            for model, info in data.items():
+                if attr not in info:
+                    continue
+                for value in info[attr]:
+                    if value not in classid2attr:
+                        classid, idjson, attrjson = self.webjson.make_class(4, value, seq, color=color,
+                                                                            rank=ranks[value], total=total)
+                        graph["class"].append(idjson)
+                        graph["classAttribute"].append(attrjson)
+                        classid2attr[value] = classid
+
+                    idjson, attrjson = self.webjson.make_property(1, attr, classid2attr[value],
+                                                                  classid2model[model])
+                    graph["property"].append(idjson)
+                    graph["propertyAttribute"].append(attrjson)
+
+            del classid2attr
+
+        return graph
 
     def process(self):
         self.webjson.delete()
-        models = self.db.get_model_infos()
-        print(models.size)
-        models = self.select_rank(models)
-        submarkets = self.db.get_model_submarkets()
-        data = self.make(models, submarkets)
-        self.webjson.store(data, file)
-        print("classid", self.webjson.classid)
-        print("propertyid", self.webjson.propertyid)
-
-    def save_node(self):
-        class_id_node = self.webjson.classid
-        property_id_node = self.webjson.propertyid
-        with open("node.txt", mode="w", encoding="utf-8") as fp:
-            fp.write("{id1} {id2}".format(id1=class_id_node, id2=property_id_node))
-
-    def start(self):
-        self.process()
-        self.save_node()
+        data, attrs = self.get_info()
+        print(f"get {len(data)} model")
+        print(f"get {len(attrs)} attributes")
+        data, size = self.prune(data)
+        print(f"present {size} model")
+        ranks, total = self.rank_ontology(data, attrs)
+        graph = self.fill_graph(data, attrs, ranks, total)
+        self.webjson.store(graph, self.file, self.base_path)
+        self.webjson.merge_css(self.base_path)
 
 
 if __name__ == "__main__":
     obj = Manager()
-    obj.start()
+    obj.process()
