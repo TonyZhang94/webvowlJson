@@ -1,0 +1,42 @@
+删除所有节点和关系
+MATCH (n)-[r]-()
+DELETE n,r
+
+删除所有节点
+match (n)
+delete n
+
+启动neo4j
+./start neo4j?
+
+
+==========================================================
+jupyter
+python -m pip install --upgrade pip
+python -m pip install jupyter
+
+jupyter notebook
+
+配置
+http://blog.csdn.net/qq_18293213/article/details/72910834
+
+jupyter notebook --generate-config
+记录下配置文件目录
+
+生成密钥
+from notebook.auth import passwd
+print passwd()
+记录密钥
+
+修改配置文件
+c.NotebookApp.ip='*'
+c.NotebookApp.password = u'sha:ce...刚才复制的那个密文'
+c.NotebookApp.open_browser = False
+c.NotebookApp.port =8888 #随便指定一个端口
+
+启动
+jupyter notebook
+
+/root/.jupyter/jupyter_notebook_config.py
+pass:22sinx*cosx
+sha1:ddeed35eeaab:8195d7941e63b5e8d945e33f192be0fd0c46515e
