@@ -34,52 +34,19 @@ colorlist.append("#00FFFF")  # 天蓝色
 colorlist.append("#B8860B")  # 浅棕色
 colorlist.append("#DB7093")  # 暗红色
 colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
-colorlist.append("#FFB90F")  # 橘黄色
+colorlist.append("#87CEFF")  # 浅蓝色
+colorlist.append("#CD2990")  # 桃红色
+colorlist.append("#FFB6C1")  # 浅肉色
+colorlist.append("#A52A2A")  # 深棕色
+colorlist.append("#7A67EE")  # 浅紫色
+colorlist.append("#009ACD")  # 蓝绿色
+colorlist.append("#CD5B45")  # 深肤色
+colorlist.append("#008B00")  # 深绿色
+colorlist.append("#B8860B")  # 浅棕色
+colorlist.append("#8968CD")  # 浅紫色
+colorlist.append("#388E8E")  # 墨绿色
+print("color list", len(colorlist))
+
 
 
 class WebJson:
@@ -163,8 +130,9 @@ class WebJson:
         if description != "":
             classAttr["description"] = {}
             classAttr["description"]["undefined"] = description
-
+        
         if color != "default":
+            color = color % 20
             if color >= 0:
                 max_diff = 25
                 base_r = 50 + max_diff
