@@ -8,6 +8,19 @@ import _pickle as pickle
 from webvowlJson.WebJson import *
 
 
+"""
+说明：
+1. base_path 在http://139.199.159.124上要指向/var/www/html/showgraph
+2. 由于我的脚本是被调用的，可能打开文件路径会有影响。会受影响的函数有：
+（1）Manager().get_info()，两处open
+（2）WebJson().store()，第一处open
+（3）WebJson().merge_css()，第二第三处open
+（4）WebJson.py 中 css_appendix 变量
+其中（2）（3）（4）设置的路径是一样的
+
+"""
+
+
 class Manager(object):
     def __init__(self, limit=100, sort_key="total_sold_price", file="datum",
                  base_path="G:\zjDetect\webvowl\\"):
