@@ -10,7 +10,7 @@ from webvowlJson.WebJson import *
 
 """
 说明：
-1. base_path 在http://139.199.159.124上要指向/var/www/html/showgraph
+1. base_path 在http://139.199.159.124上要指向 服务地址/showgraph
 2. 由于我的脚本是被调用的，可能打开文件路径会有影响。会受影响的函数有：
 （1）Manager().get_info()，两处open
 （2）WebJson().store()，第一处open
@@ -23,7 +23,7 @@ from webvowlJson.WebJson import *
 
 class Manager(object):
     def __init__(self, limit=100, sort_key="total_sold_price", file="datum",
-                 base_path="G:\zjDetect\webvowl\\"):
+                 base_path="/home/qin/www/showgraph/"):
         self.webjson = WebJson()
         self.webjson.classid = 0
         self.webjson.propertyid = 0

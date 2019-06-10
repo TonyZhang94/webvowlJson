@@ -63,19 +63,19 @@ class WebJson:
 
     @staticmethod
     def store(data, file, base_path):
-        path = 'files\{}.json'.format(file)
+        path = 'files/{}.json'.format(file)
         # print("json store path1", path)
         with open(path, 'w') as json_file:
             json_file.write(json.dumps(data))
 
-        path = f"{base_path}data\{file}.json"
+        path = f"{base_path}data/{file}.json"
         # print("json store path2", path)
         with open(path, 'w') as json_file:
             json_file.write(json.dumps(data))
 
     @staticmethod
     def merge_css(base_path):
-        dst_css = base_path + "css\webvowl.css"
+        dst_css = base_path + "css/webvowl.css"
         # print("dst css path", dst_css)
         with open(dst_css, mode="w", encoding="utf-8") as dst_fp:
             with open("files/base.css", mode="r", encoding="utf-8") as src_fp:
@@ -88,7 +88,7 @@ class WebJson:
 
     @staticmethod
     def load():
-        with open('G:\webvowlJson\demo2.json') as json_file:
+        with open('G:/webvowlJson/demo2.json') as json_file:
             data = json.load(json_file)
             return data
 
